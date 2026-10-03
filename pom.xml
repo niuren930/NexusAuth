@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.16</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.nexusauth</groupId>
+    <artifactId>NexusAuth</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <name>NexusAuth</name>
+    <description>NexusAuth 统一认证授权平台：网关、系统管理、统一认证（SSO）</description>
+
+    <modules>
+        <module>nexusAuth-common</module>
+        <module>nexusAuth-gateway</module>
+        <module>nexusAuth-system</module>
+        <module>nexusAuth-auth</module>
+    </modules>
+
+    <properties>
+        <java.version>21</java.version>
+        <spring-cloud.version>2025.0.3</spring-cloud.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- 公共模块：供各服务统一引用 -->
+            <dependency>
+                <groupId>com.nexusauth</groupId>
+                <artifactId>nexusAuth-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <!-- Spring Cloud 版本管理（网关等组件） -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
