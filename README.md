@@ -56,4 +56,4 @@ com.nexusauth
 
 ## 开源协议
 
-[MIT](LICENSE)
+[Apache License 2.0](LICENSE)
