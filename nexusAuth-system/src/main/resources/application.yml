@@ -4,3 +4,6 @@ server:
 spring:
   application:
     name: nexusauth-system
+  profiles:
+    # 默认本地 dev；生产启动时用 --spring.profiles.active=prod 覆盖
+    active: dev

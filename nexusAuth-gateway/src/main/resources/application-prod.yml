@@ -1,0 +1,8 @@
+spring:
+  config:
+    import:
+      - optional:nacos:${spring.application.name}.yml
+  cloud:
+    nacos:
+      # TODO: 替换为生产 Nacos 地址
+      server-addr: nacos.example.com:8848

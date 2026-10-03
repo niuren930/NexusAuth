@@ -4,3 +4,18 @@ server:
 spring:
   application:
     name: nexusauth-gateway
+  profiles:
+    # 默认本地 dev；生产启动时用 --spring.profiles.active=prod 覆盖
+    active: dev
+  cloud:
+    gateway:
+      # 按服务名路由到 Nacos 注册的实例，路径原样转发（服务内 controller 保留 /system、/auth 前缀）
+      routes:
+        - id: nexusauth-system
+          uri: lb://nexusauth-system
+          predicates:
+            - Path=/system/**
+        - id: nexusauth-auth
+          uri: lb://nexusauth-auth
+          predicates:
+            - Path=/auth/**

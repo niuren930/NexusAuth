@@ -1,0 +1,8 @@
+spring:
+  config:
+    import:
+      # 配置中心可选：本地未上传对应 dataId 时直接跳过
+      - optional:nacos:${spring.application.name}.yml
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848

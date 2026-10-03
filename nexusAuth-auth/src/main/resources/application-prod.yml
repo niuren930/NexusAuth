@@ -1,0 +1,28 @@
+spring:
+  config:
+    import:
+      - optional:nacos:${spring.application.name}.yml
+  cloud:
+    nacos:
+      # TODO: 替换为生产 Nacos 地址
+      server-addr: nacos.example.com:8848
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # TODO: 替换为生产 MySQL 连接信息
+    url: jdbc:mysql://mysql.example.com:3306/nexusauth_auth?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: nexusauth
+    password: changeme
+  data:
+    redis:
+      # TODO: 替换为生产 Redis 连接信息
+      host: redis.example.com
+      port: 6379
+      password: changeme
+      # 与 nexusauth-system 使用不同 db，避免缓存键冲突
+      database: 1
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.nexusauth.domain
+  configuration:
+    map-underscore-to-camel-case: true

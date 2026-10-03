@@ -17,7 +17,19 @@ NexusAuth 统一认证授权平台 —— 基于 Spring Boot 3.5 + Spring Cloud 
 
 - JDK 21
 - Spring Boot 3.5.16
-- Spring Cloud 2025.0.3（Gateway）
+- Spring Cloud 2025.0.3（Gateway）+ Spring Cloud Alibaba 2025.0.0.0（Nacos）
+- MySQL 8（MyBatis-Plus 3.5.17）
+- Redis（Spring Data Redis / Lettuce）
+
+## 本地环境依赖（dev 配置）
+
+| 服务 | 本地默认连接 |
+| --- | --- |
+| MySQL | `localhost:3306`，root / 123456，业务库首次连接自动创建 |
+| Redis | `localhost:6379`，密码 123456 |
+| Nacos | `localhost:8848`（已关闭鉴权），服务自动注册、配置中心可选 |
+
+默认激活 `dev` 环境；生产启动时使用 `--spring.profiles.active=prod`，并替换 `application-prod.yml` 中的连接信息。
 
 ## 快速开始
 
