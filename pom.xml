@@ -21,6 +21,7 @@
 
     <modules>
         <module>nexusAuth-common</module>
+        <module>nexusAuth-api</module>
         <module>nexusAuth-gateway</module>
         <module>nexusAuth-system</module>
         <module>nexusAuth-auth</module>
@@ -33,6 +34,7 @@
         <mybatis-plus.version>3.5.17</mybatis-plus.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <sa-token.version>1.46.0</sa-token.version>
     </properties>
 
     <dependencyManagement>
@@ -41,6 +43,12 @@
             <dependency>
                 <groupId>com.nexusauth</groupId>
                 <artifactId>nexusAuth-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <!-- API 模块：Feign 接口与 DTO，供服务间调用方统一引用 -->
+            <dependency>
+                <groupId>com.nexusauth</groupId>
+                <artifactId>nexusAuth-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- Spring Cloud 版本管理（网关等组件） -->
