@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.nexusauth.api.system.SystemUserApi;
 import com.nexusauth.api.system.dto.UserAuthInfo;
 import com.nexusauth.domain.entity.User;
+import com.nexusauth.domain.enums.UserStatus;
 import com.nexusauth.mapper.UserMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -42,7 +43,7 @@ public class InternalUserController implements SystemUserApi {
                 user.getId(),
                 user.getUsername(),
                 user.getPasswordHash(),
-                user.getStatus().getCode()
+                user.getStatus() == UserStatus.NORMAL
         );
     }
 }

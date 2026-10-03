@@ -21,6 +21,6 @@ public record UserAuthInfo(
         // 密码哈希
         String passwordHash,
         // 用户状态
-        Integer status
+        boolean loginAllowed
 ) {
 }
