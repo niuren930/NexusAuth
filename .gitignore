@@ -8,6 +8,7 @@ target/
 # Log files
 *.log
 logs/
+test/
 
 # IntelliJ IDEA
 .idea/

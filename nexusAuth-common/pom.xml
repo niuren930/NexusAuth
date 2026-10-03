@@ -15,4 +15,18 @@
 
     <name>nexusAuth-common</name>
     <description>NexusAuth 公共模块：工具类、公共实体、常量、异常、通用返回对象等</description>
+
+    <dependencies>
+        <!-- MyBatis-Plus Core：仅用于公共实体中的 MP 注解等基础能力 -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-core</artifactId>
+            <version>${mybatis-plus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>
