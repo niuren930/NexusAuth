@@ -17,6 +17,12 @@
     <description>NexusAuth 系统管理服务</description>
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.nexusauth</groupId>
+            <artifactId>nexusAuth-api</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.nexusauth</groupId>
             <artifactId>nexusAuth-common</artifactId>

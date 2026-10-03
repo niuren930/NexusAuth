@@ -9,6 +9,7 @@ target/
 *.log
 logs/
 test/
+docs/dev-plan/
 
 # IntelliJ IDEA
 .idea/

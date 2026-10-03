@@ -23,6 +23,12 @@
 
     <dependencies>
 
+        <!-- nexusAuth-api 要定义 Spring MVC 接口，所以给它加轻量-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.nexusauth</groupId>
             <artifactId>nexusAuth-common</artifactId>

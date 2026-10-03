@@ -18,6 +18,11 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>com.nexusauth</groupId>
+            <artifactId>nexusAuth-api</artifactId>
+        </dependency>
+
         <!-- Sa-Token：Spring Boot 3.x -->
         <dependency>
             <groupId>cn.dev33</groupId>
@@ -29,6 +34,11 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <!-- 按服务名做负载均衡调用（Spring Cloud 2025.x 需显式引入） -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
 
         <!-- 密码 BCrypt 不使用 Spring Security 做认证,因此只引入部分 -->
@@ -73,6 +83,11 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
