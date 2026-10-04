@@ -23,6 +23,13 @@
             <artifactId>nexusAuth-api</artifactId>
         </dependency>
 
+        <!-- Sa-Token 使用 RedisTemplate 持久化登录态 -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-redis-template</artifactId>
+            <version>${sa-token.version}</version>
+        </dependency>
+
         <!-- Sa-Token：Spring Boot 3.x -->
         <dependency>
             <groupId>cn.dev33</groupId>
