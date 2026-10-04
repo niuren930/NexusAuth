@@ -3,11 +3,13 @@ package com.nexusauth.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import com.nexusauth.api.system.dto.UserAuthInfo;
 import com.nexusauth.client.SystemUserClient;
+import com.nexusauth.domain.dto.LoginClientInfo;
 import com.nexusauth.domain.dto.LoginRequest;
 import com.nexusauth.domain.vo.LoginResponse;
 import com.nexusauth.exception.AuthErrorCode;
 import com.nexusauth.exception.BusinessException;
 import com.nexusauth.service.AuthService;
+import com.nexusauth.service.LoginLogService;
 import feign.FeignException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,20 +25,31 @@ public class AuthServiceImpl implements AuthService {
 
     private final SystemUserClient systemUserClient;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final LoginLogService loginLogService;
 
-    public AuthServiceImpl(SystemUserClient systemUserClient, BCryptPasswordEncoder passwordEncoder) {
+    public AuthServiceImpl(SystemUserClient systemUserClient, BCryptPasswordEncoder passwordEncoder, LoginLogService loginLogService) {
         this.systemUserClient = systemUserClient;
         this.passwordEncoder = passwordEncoder;
+        this.loginLogService = loginLogService;
     }
 
     @Override
-    public LoginResponse login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request,
+                               LoginClientInfo clientInfo) {
 
         // 1. 查询用户认证信息
         UserAuthInfo userAuthInfo;
         try {
             userAuthInfo = systemUserClient.getUserAuthInfo(request.username());
         } catch (FeignException.NotFound exception) {
+
+            loginLogService.recordFailure(
+                    null,
+                    request.username(),
+                    "USER_NOT_FOUND",
+                    clientInfo
+            );
+
             // 不告诉外部“用户名不存在”
             throw new BusinessException(
                     AuthErrorCode.USERNAME_OR_PASSWORD_ERROR
@@ -53,16 +66,38 @@ public class AuthServiceImpl implements AuthService {
         // 2. 校验密码
         boolean matches = passwordEncoder.matches(request.password(), userAuthInfo.passwordHash());
         if (!matches) {
+
+            loginLogService.recordFailure(
+                    userAuthInfo.userId(),
+                    userAuthInfo.username(),
+                    "PASSWORD_ERROR",
+                    clientInfo
+            );
+
             throw new BusinessException(AuthErrorCode.USERNAME_OR_PASSWORD_ERROR);
         }
 
         // 3. 检查账号是否允许登录
         if (!userAuthInfo.loginAllowed()) {
+
+            loginLogService.recordFailure(
+                    userAuthInfo.userId(),
+                    userAuthInfo.username(),
+                    "ACCOUNT_NOT_ALLOWED",
+                    clientInfo
+            );
+
             throw new BusinessException(AuthErrorCode.ACCOUNT_NOT_ALLOWED);
         }
 
         // 4. sa-token 创建登录态
         StpUtil.login(userAuthInfo.userId());
+
+        loginLogService.recordSuccess(
+                userAuthInfo.userId(),
+                userAuthInfo.username(),
+                clientInfo
+        );
 
         // 5. 返回登录结果
         return new LoginResponse(

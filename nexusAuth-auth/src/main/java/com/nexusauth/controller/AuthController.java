@@ -2,9 +2,11 @@ package com.nexusauth.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.nexusauth.core.Result;
+import com.nexusauth.domain.dto.LoginClientInfo;
 import com.nexusauth.domain.dto.LoginRequest;
 import com.nexusauth.domain.vo.LoginResponse;
 import com.nexusauth.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,9 +33,14 @@ public class AuthController {
      */
     @PostMapping("/login")
     public Result<LoginResponse> login(
-           @Valid @RequestBody LoginRequest request) {
+            @Valid @RequestBody LoginRequest request, HttpServletRequest servletRequest) {
 
-        return Result.success(authService.login(request));
+        LoginClientInfo clientInfo = new LoginClientInfo(
+                servletRequest.getRemoteAddr(),
+                servletRequest.getHeader("User-Agent")
+        );
+
+        return Result.success(authService.login(request, clientInfo));
     }
 
     /**
