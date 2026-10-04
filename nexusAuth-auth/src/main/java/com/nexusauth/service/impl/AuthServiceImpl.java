@@ -5,7 +5,10 @@ import com.nexusauth.api.system.dto.UserAuthInfo;
 import com.nexusauth.client.SystemUserClient;
 import com.nexusauth.domain.dto.LoginRequest;
 import com.nexusauth.domain.vo.LoginResponse;
+import com.nexusauth.exception.AuthErrorCode;
+import com.nexusauth.exception.BusinessException;
 import com.nexusauth.service.AuthService;
+import feign.FeignException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,32 +33,43 @@ public class AuthServiceImpl implements AuthService {
     public LoginResponse login(LoginRequest request) {
 
         // 1. 查询用户认证信息
-        UserAuthInfo userAuthInfo = systemUserClient.getUserAuthInfo(request.username());
+        UserAuthInfo userAuthInfo;
+        try {
+            userAuthInfo = systemUserClient.getUserAuthInfo(request.username());
+        } catch (FeignException.NotFound exception) {
+            // 不告诉外部“用户名不存在”
+            throw new BusinessException(
+                    AuthErrorCode.USERNAME_OR_PASSWORD_ERROR
+            );
 
-        // 2. 检查账号是否允许登录
-        if (!userAuthInfo.loginAllowed()) {
-            throw new IllegalStateException("当前账号不允许登录");
+        } catch (FeignException exception) {
+            // system 服务不可用、超时、500 等
+            throw new BusinessException(
+                    AuthErrorCode.USER_SERVICE_UNAVAILABLE
+            );
         }
 
-        // 3. 校验密码
+
+        // 2. 校验密码
         boolean matches = passwordEncoder.matches(request.password(), userAuthInfo.passwordHash());
         if (!matches) {
-            throw new IllegalStateException("账号密码错误");
+            throw new BusinessException(AuthErrorCode.USERNAME_OR_PASSWORD_ERROR);
+        }
+
+        // 3. 检查账号是否允许登录
+        if (!userAuthInfo.loginAllowed()) {
+            throw new BusinessException(AuthErrorCode.ACCOUNT_NOT_ALLOWED);
         }
 
         // 4. sa-token 创建登录态
         StpUtil.login(userAuthInfo.userId());
 
-        // 5. 获取本次token
-        String tokenName = StpUtil.getTokenName();
-        String tokenValue = StpUtil.getTokenValue();
-
-        // 6. 返回登录结果
+        // 5. 返回登录结果
         return new LoginResponse(
                 userAuthInfo.userId(),
                 userAuthInfo.username(),
-                tokenName,
-                tokenValue
+                StpUtil.getTokenName(),
+                StpUtil.getTokenValue()
         );
     }
 

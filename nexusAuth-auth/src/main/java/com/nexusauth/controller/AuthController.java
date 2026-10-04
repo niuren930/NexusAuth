@@ -1,6 +1,7 @@
 package com.nexusauth.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.nexusauth.core.Result;
 import com.nexusauth.domain.dto.LoginRequest;
 import com.nexusauth.domain.vo.LoginResponse;
 import com.nexusauth.service.AuthService;
@@ -28,34 +29,37 @@ public class AuthController {
      * 登录。
      */
     @PostMapping("/login")
-    public LoginResponse login(
+    public Result<LoginResponse> login(
             @RequestBody LoginRequest request) {
 
-        return authService.login(request);
+        return Result.success(authService.login(request));
     }
 
     /**
      * 当前登录信息。
      */
     @GetMapping("/me")
-    public Map<String, Object> me() {
+    public Result<Map<String, Object>> me() {
 
         StpUtil.checkLogin();
 
-        return Map.of(
-                "userId",
-                StpUtil.getLoginIdAsLong()
-        );
+        return Result.success(
+                Map.of(
+                        "userId",
+                        StpUtil.getLoginIdAsLong()
+                ));
     }
 
     /**
      * 退出登录。
      */
     @PostMapping("/logout")
-    public void logout() {
+    public Result<Void> logout() {
 
         StpUtil.checkLogin();
 
         authService.logout();
+
+        return Result.success();
     }
 }

@@ -58,6 +58,12 @@
             <groupId>com.nexusauth</groupId>
             <artifactId>nexusAuth-common</artifactId>
         </dependency>
+        <!-- Lombok：provided 不随 common 传递，需在本模块声明 -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
