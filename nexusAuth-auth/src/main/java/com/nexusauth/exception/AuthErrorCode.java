@@ -13,6 +13,11 @@ package com.nexusauth.exception;
  */
 public enum AuthErrorCode implements ErrorCode {
 
+    INVALID_REQUEST(
+            2001000,
+            "请求参数不正确"
+    ),
+
     /**
      * 用户名或密码错误。
      * <p>

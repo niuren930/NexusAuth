@@ -8,6 +8,8 @@ import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -92,6 +94,30 @@ public class GlobalExceptionHandler {
                         Result.fail(
                                 500000,
                                 "系统内部异常"
+                        )
+                );
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Result<Void>> handleValidationException(
+            MethodArgumentNotValidException exception) {
+
+        String message = exception
+                .getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .findFirst()
+                .map(FieldError::getDefaultMessage)
+                .orElse(
+                        AuthErrorCode.INVALID_REQUEST.getMessage()
+                );
+
+        return ResponseEntity
+                .badRequest()
+                .body(
+                        Result.fail(
+                                AuthErrorCode.INVALID_REQUEST.getCode(),
+                                message
                         )
                 );
     }

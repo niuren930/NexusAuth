@@ -5,6 +5,7 @@ import com.nexusauth.core.Result;
 import com.nexusauth.domain.dto.LoginRequest;
 import com.nexusauth.domain.vo.LoginResponse;
 import com.nexusauth.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -30,7 +31,7 @@ public class AuthController {
      */
     @PostMapping("/login")
     public Result<LoginResponse> login(
-            @RequestBody LoginRequest request) {
+           @Valid @RequestBody LoginRequest request) {
 
         return Result.success(authService.login(request));
     }
