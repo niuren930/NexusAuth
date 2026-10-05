@@ -2,6 +2,7 @@ package com.nexusauth.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.nexusauth.domain.BaseEntity;
+import com.nexusauth.domain.enums.TenantMemberStatus;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -61,7 +62,7 @@ public class TenantMember extends BaseEntity {
      * 2 - 禁用
      * 3 - 已退出
      */
-    private Integer status;
+    private TenantMemberStatus status;
 
     /**
      * 加入租户时间。

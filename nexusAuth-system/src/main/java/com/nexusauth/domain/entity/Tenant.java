@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.nexusauth.domain.BaseEntity;
+import com.nexusauth.domain.enums.TenantStatus;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -53,7 +54,7 @@ public class Tenant extends BaseEntity {
      * 3 - 过期
      * 4 - 关闭
      */
-    private Integer status;
+    private TenantStatus status;
 
     /**
      * 租户过期时间。
