@@ -1,11 +1,16 @@
 package com.nexusauth.service.impl;
 
+import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
 import com.nexusauth.api.system.dto.UserAuthInfo;
+import com.nexusauth.api.system.dto.UserTenantInfo;
+import com.nexusauth.client.SystemTenantClient;
 import com.nexusauth.client.SystemUserClient;
+import com.nexusauth.constant.AuthSessionConstants;
 import com.nexusauth.domain.dto.LoginClientInfo;
 import com.nexusauth.domain.dto.LoginRequest;
 import com.nexusauth.domain.vo.LoginResponse;
+import com.nexusauth.domain.vo.TenantVO;
 import com.nexusauth.exception.AuthErrorCode;
 import com.nexusauth.exception.BusinessException;
 import com.nexusauth.service.AuthService;
@@ -13,6 +18,8 @@ import com.nexusauth.service.LoginLogService;
 import feign.FeignException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * 认证服务实现
@@ -26,11 +33,13 @@ public class AuthServiceImpl implements AuthService {
     private final SystemUserClient systemUserClient;
     private final BCryptPasswordEncoder passwordEncoder;
     private final LoginLogService loginLogService;
+    private final SystemTenantClient systemTenantClient;
 
-    public AuthServiceImpl(SystemUserClient systemUserClient, BCryptPasswordEncoder passwordEncoder, LoginLogService loginLogService) {
+    public AuthServiceImpl(SystemUserClient systemUserClient, BCryptPasswordEncoder passwordEncoder, LoginLogService loginLogService, SystemTenantClient systemTenantClient) {
         this.systemUserClient = systemUserClient;
         this.passwordEncoder = passwordEncoder;
         this.loginLogService = loginLogService;
+        this.systemTenantClient = systemTenantClient;
     }
 
     @Override
@@ -111,5 +120,51 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void logout() {
         StpUtil.logout();
+    }
+
+    @Override
+    public List<TenantVO> getMyTenants() {
+
+        StpUtil.checkLogin();
+
+        long userId = StpUtil.getLoginIdAsLong();
+
+        return systemTenantClient.getUserTenants(userId).stream()
+                .map(item -> new TenantVO(item.tenantId(),
+                        item.tenantCode(),
+                        item.tenantName(),
+                        item.memberName(),
+                        item.owner(),
+                        item.logo())
+                )
+                .toList();
+    }
+
+    @Override
+    public TenantVO switchTenant(Long tenantId) {
+
+        StpUtil.checkLogin();
+
+        long userId = StpUtil.getLoginIdAsLong();
+
+        // 验证成员和租户关系
+        UserTenantInfo tenantAccessInfo = systemTenantClient.getTenantAccessInfo(userId, tenantId);
+
+        if (tenantAccessInfo == null) {
+            throw new BusinessException(AuthErrorCode.TENANT_ACCESS_DENIED);
+        }
+
+        SaSession tokenSession = StpUtil.getTokenSession();
+        tokenSession.set(AuthSessionConstants.TENANT_ID,tenantAccessInfo.tenantId());
+        tokenSession.set(AuthSessionConstants.MEMBER_ID,tenantAccessInfo.memberId());
+
+        return new TenantVO(
+                tenantAccessInfo.tenantId(),
+                tenantAccessInfo.tenantCode(),
+                tenantAccessInfo.tenantName(),
+                tenantAccessInfo.memberName(),
+                tenantAccessInfo.owner(),
+                tenantAccessInfo.logo()
+        );
     }
 }

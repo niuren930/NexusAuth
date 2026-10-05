@@ -4,12 +4,15 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.nexusauth.core.Result;
 import com.nexusauth.domain.dto.LoginClientInfo;
 import com.nexusauth.domain.dto.LoginRequest;
+import com.nexusauth.domain.dto.SwitchTenantRequest;
 import com.nexusauth.domain.vo.LoginResponse;
+import com.nexusauth.domain.vo.TenantVO;
 import com.nexusauth.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -69,5 +72,21 @@ public class AuthController {
         authService.logout();
 
         return Result.success();
+    }
+
+    /**
+     * 获取当前登录用户可访问的租户
+     */
+    @GetMapping("/tenants")
+    public Result<List<TenantVO>> tenants() {
+        return Result.success(authService.getMyTenants());
+    }
+
+    /**
+     * 切换租户
+     */
+    @PostMapping("/tenant/switch")
+    public Result<TenantVO> switchTenant(@Valid @RequestBody SwitchTenantRequest request) {
+        return Result.success( authService.switchTenant( request.tenantId()));
     }
 }

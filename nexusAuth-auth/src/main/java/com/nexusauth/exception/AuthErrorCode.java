@@ -13,6 +13,11 @@ package com.nexusauth.exception;
  */
 public enum AuthErrorCode implements ErrorCode {
 
+    TENANT_ACCESS_DENIED(
+            2002001,
+            "无权访问该租户"
+    ),
+
     INVALID_REQUEST(
             2001000,
             "请求参数不正确"
