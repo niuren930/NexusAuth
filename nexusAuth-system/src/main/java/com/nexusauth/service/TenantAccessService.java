@@ -25,4 +25,11 @@ public interface TenantAccessService {
      * @return
      */
     UserTenantInfo getTenantAccessInfo(Long userId, Long tenantId);
+
+    /**
+     * 获取当前用户在当前租户中的成员信息。
+     *
+     * @return 当前租户访问关系；不存在时返回 null
+     */
+    UserTenantInfo getCurrentTenantAccessInfo();
 }

@@ -32,4 +32,9 @@ public class InternalTenantController implements SystemTenantApi {
     public UserTenantInfo getTenantAccessInfo(Long userId, Long tenantId) {
         return tenantAccessService.getTenantAccessInfo(userId, tenantId);
     }
+
+    @Override
+    public UserTenantInfo getCurrentTenantAccessInfo() {
+        return tenantAccessService.getCurrentTenantAccessInfo();
+    }
 }

@@ -1,6 +1,9 @@
 package com.nexusauth.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.nexusauth.api.system.dto.UserTenantInfo;
+import com.nexusauth.context.OperatorContextHolder;
+import com.nexusauth.context.TenantContextHolder;
 import com.nexusauth.domain.entity.Tenant;
 import com.nexusauth.domain.entity.TenantMember;
 import com.nexusauth.domain.enums.TenantMemberStatus;
@@ -88,5 +91,51 @@ public class TenantAccessServiceImpl implements TenantAccessService {
                                 .equals(tenantId))
                 .findFirst()
                 .orElse(null);
+    }
+
+    @Override
+    public UserTenantInfo getCurrentTenantAccessInfo() {
+        /*
+         * 当前登录用户
+         */
+        Long userId = OperatorContextHolder.requireUserId();
+
+        /*
+         * 当前租户来自
+         */
+        Long tenantId = TenantContextHolder.requireTenantId();
+
+        /*
+         * 注意：
+         * 这里故意只写 user_id 和成员状态，
+         * 没有手动添加：
+         *
+         * .eq(TenantMember::getTenantId, tenantId)
+         *
+         * 因为我们就是要让 MyBatis-Plus
+         * TenantLineInnerInterceptor 自动添加 tenant_id 条件。
+         */
+        TenantMember member =
+                tenantMemberMapper.selectOne(
+                        new LambdaQueryWrapper<TenantMember>()
+                                .eq(TenantMember::getUserId, userId)
+                                .eq(TenantMember::getStatus, TenantMemberStatus.NORMAL)
+                );
+
+        if (member == null) {
+            return null;
+        }
+
+        /*
+         * na_tenant 属于平台级表，
+         * 在 NexusTenantLineHandler 中已经设置为忽略租户拦截。
+         */
+        Tenant tenant = tenantMapper.selectById(tenantId);
+
+        if (tenant == null || tenant.getStatus() != TenantStatus.NORMAL) {
+            return null;
+        }
+
+        return toUserTenantInfo(member, tenant);
     }
 }

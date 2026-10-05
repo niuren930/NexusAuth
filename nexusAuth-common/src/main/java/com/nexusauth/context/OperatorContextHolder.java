@@ -55,6 +55,35 @@ public final class OperatorContextHolder {
     }
 
     /**
+     * 获取当前登录操作人的用户ID。
+     *
+     * 与 getUserIdOrSystem() 不同：
+     *
+     * getUserIdOrSystem()
+     *   没有登录用户时返回 SYSTEM_USER_ID（0L），
+     *   适用于 createdBy / updatedBy 等审计字段。
+     *
+     * requireUserId()
+     *   当前请求必须存在真实登录用户，
+     *   不存在时直接抛出异常。
+     *
+     * @return 当前登录用户ID
+     * @throws IllegalStateException 当前操作人上下文不存在
+     */
+    public static Long requireUserId() {
+
+        Long userId = getUserId();
+
+        if (userId == null) {
+            throw new IllegalStateException(
+                    "当前操作人上下文缺失"
+            );
+        }
+
+        return userId;
+    }
+
+    /**
      * 清理当前线程中的操作人上下文。
      */
     public static void clear() {

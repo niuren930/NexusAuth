@@ -32,4 +32,11 @@ public interface AuthService {
      * @param tenantId 租户id
      */
     TenantVO switchTenant(Long tenantId);
+
+    /**
+     * 获取当前 Token 所处租户。
+     *
+     * @return 当前租户信息
+     */
+    TenantVO getCurrentTenant();
 }

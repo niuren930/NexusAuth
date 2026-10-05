@@ -13,6 +13,11 @@ package com.nexusauth.exception;
  */
 public enum AuthErrorCode implements ErrorCode {
 
+    /**
+     * 当前 Token 尚未选择租户。
+     */
+    TENANT_NOT_SELECTED(2002002, "请先选择租户"),
+
     TENANT_ACCESS_DENIED(
             2002001,
             "无权访问该租户"

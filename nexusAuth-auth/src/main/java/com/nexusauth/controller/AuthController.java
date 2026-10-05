@@ -89,4 +89,12 @@ public class AuthController {
     public Result<TenantVO> switchTenant(@Valid @RequestBody SwitchTenantRequest request) {
         return Result.success( authService.switchTenant( request.tenantId()));
     }
+
+    /**
+     * 获取当前 Token 已选择的租户。
+     */
+    @GetMapping("/tenant/current")
+    public Result<TenantVO> currentTenant() {
+        return Result.success(authService.getCurrentTenant());
+    }
 }

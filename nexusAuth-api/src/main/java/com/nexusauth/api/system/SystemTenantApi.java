@@ -26,4 +26,12 @@ public interface SystemTenantApi {
     UserTenantInfo getTenantAccessInfo(@RequestParam("userId") Long userId,
                                        @RequestParam("tenantId") Long tenantId
     );
+
+    /**
+     * 获取当前用户在“已经选择好的当前租户”中的访问信息。
+     *
+     * userId、tenantId 全部从内部上下文获取。
+     */
+    @GetMapping("/internal/tenants/current-access")
+    UserTenantInfo getCurrentTenantAccessInfo();
 }

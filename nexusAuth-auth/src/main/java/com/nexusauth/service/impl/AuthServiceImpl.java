@@ -7,6 +7,7 @@ import com.nexusauth.api.system.dto.UserTenantInfo;
 import com.nexusauth.client.SystemTenantClient;
 import com.nexusauth.client.SystemUserClient;
 import com.nexusauth.constant.AuthSessionConstants;
+import com.nexusauth.context.TenantContextHolder;
 import com.nexusauth.domain.dto.LoginClientInfo;
 import com.nexusauth.domain.dto.LoginRequest;
 import com.nexusauth.domain.vo.LoginResponse;
@@ -155,8 +156,13 @@ public class AuthServiceImpl implements AuthService {
         }
 
         SaSession tokenSession = StpUtil.getTokenSession();
+        // 保存当前 Token  所选择的租户
         tokenSession.set(AuthSessionConstants.TENANT_ID,tenantAccessInfo.tenantId());
+        // 保存当前用户在租户中的成员关系ID
         tokenSession.set(AuthSessionConstants.MEMBER_ID,tenantAccessInfo.memberId());
+        // 同步更新当前请求线程中的租户上下文
+        // 后续请求会由 AuthRequestContextFilter 从 Token-Session 自动重新恢复
+        TenantContextHolder.setTenantId(tenantAccessInfo.tenantId());
 
         return new TenantVO(
                 tenantAccessInfo.tenantId(),
@@ -165,6 +171,51 @@ public class AuthServiceImpl implements AuthService {
                 tenantAccessInfo.memberName(),
                 tenantAccessInfo.owner(),
                 tenantAccessInfo.logo()
+        );
+    }
+
+    @Override
+    public TenantVO getCurrentTenant() {
+
+        /*
+         * 当前接口必须存在有效登录态。
+         */
+        StpUtil.checkLogin();
+
+        /*
+         * AuthRequestContextFilter 已经从 Token-Session恢复了当前租户。
+         *
+         * 如果为空，说明用户虽然已经登录，但还没有执行租户选择。
+         */
+        Long tenantId =TenantContextHolder.getTenantId();
+
+        if (tenantId == null) {
+            throw new BusinessException(
+                    AuthErrorCode.TENANT_NOT_SELECTED
+            );
+        }
+
+        /*
+         * 这里不把 tenantId 和 userId 当参数传给 system。
+         *
+         * Feign 拦截器会自动通过内部 Header将当前上下文传递给 system。
+         */
+        UserTenantInfo tenantInfo =systemTenantClient.getCurrentTenantAccessInfo();
+
+        if (tenantInfo == null) {
+
+            throw new BusinessException(
+                    AuthErrorCode.TENANT_ACCESS_DENIED
+            );
+        }
+
+        return new TenantVO(
+                tenantInfo.tenantId(),
+                tenantInfo.tenantCode(),
+                tenantInfo.tenantName(),
+                tenantInfo.memberName(),
+                tenantInfo.owner(),
+                tenantInfo.logo()
         );
     }
 }
