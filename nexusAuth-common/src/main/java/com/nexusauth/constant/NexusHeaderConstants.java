@@ -27,6 +27,14 @@ public class NexusHeaderConstants {
      */
     public static final String TENANT_ID = "X-Nexus-Tenant-Id";
 
+    /**
+     * Auth 调用 System 时携带的服务凭证。
+     * <p>
+     * 该值用于验证调用服务，不是用户 Token，也不是应用客户端 Secret。
+     * 只能由调用方从外部配置注入，不能从浏览器请求中透传。
+     */
+    public static final String SERVICE_TOKEN = "X-Nexus-Service-Token";
+
     private NexusHeaderConstants() {
     }
 }

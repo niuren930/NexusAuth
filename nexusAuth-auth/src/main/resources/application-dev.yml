@@ -51,3 +51,8 @@ mybatis-plus:
     map-underscore-to-camel-case: true
     # 本地开发打印 SQL
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# Auth 与 System 由运行环境注入相同的服务凭证；缺失时拒绝启动。
+nexusauth:
+  internal:
+    system-token: ${NEXUSAUTH_SYSTEM_INTERNAL_TOKEN:NIUREN-NEXUSAUTH-20261006}
