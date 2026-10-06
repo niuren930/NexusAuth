@@ -11,7 +11,7 @@ import java.util.Set;
 /**
  * NexusAuth MyBatis-Plus 多租户处理器
  *
- * 用于高速 MP：
+ * 用于告诉 MP：
  * 1. 当前租户是谁？
  * 2. 租户字段叫什么？
  * 3. 哪些表无需租户隔离
@@ -30,7 +30,9 @@ public class NexusTenantLineHandler implements TenantLineHandler {
      */
     private static final Set<String> IGNORE_TABLES = Set.of(
             "na_user",
-            "na_tenant"
+            "na_tenant",
+            // 应用资源是全局定义，表中没有 tenant_id；授权关系表继续参与租户隔离。
+            "na_resource"
     );
 
     /**

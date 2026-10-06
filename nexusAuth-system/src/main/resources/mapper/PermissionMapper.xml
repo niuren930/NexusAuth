@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nexusauth.mapper.PermissionMapper">
+
+    <!-- record 使用显式构造参数映射，不依赖无参构造或 setter。 -->
+    <resultMap id="roleGrantMap" type="com.nexusauth.api.system.dto.RoleGrantInfo">
+        <constructor>
+            <idArg column="role_id" javaType="java.lang.Long"/>
+            <arg column="app_id" javaType="java.lang.Long"/>
+            <arg column="role_code" javaType="java.lang.String"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="permissionGrantMap" type="com.nexusauth.api.system.dto.PermissionGrantInfo">
+        <constructor>
+            <idArg column="resource_id" javaType="java.lang.Long"/>
+            <arg column="app_id" javaType="java.lang.Long"/>
+            <arg column="permission_code" javaType="java.lang.String"/>
+        </constructor>
+    </resultMap>
+
+    <select id="selectRoleGrants" resultMap="roleGrantMap">
+        SELECT DISTINCT
+            r.id AS role_id,
+            r.app_id,
+            r.role_code
+        FROM na_member_role mr
+        INNER JOIN na_role r ON r.id = mr.role_id AND r.tenant_id = mr.tenant_id
+        WHERE
+            mr.tenant_id = #{tenantId}
+            AND mr.member_id = #{memberId}
+            AND r.status = #{roleStatus}
+            AND r.deleted_at = 0
+        ORDER BY r.app_id, r.role_code, r.id
+    </select>
+
+    <select id="selectPermissionGrants" resultMap="permissionGrantMap">
+        SELECT DISTINCT
+            res.id AS resource_id,
+            res.app_id,
+            res.permission_code
+        FROM na_member_role mr
+        INNER JOIN na_role r ON r.id = mr.role_id AND r.tenant_id = mr.tenant_id
+        INNER JOIN na_role_resource rr ON rr.role_id = r.id AND rr.tenant_id = r.tenant_id
+        INNER JOIN na_resource res ON res.id = rr.resource_id
+        WHERE
+            mr.tenant_id = #{tenantId}
+            AND mr.member_id = #{memberId}
+            AND r.status = #{roleStatus}
+            AND r.deleted_at = 0
+            AND res.status = #{resourceStatus}
+            AND res.deleted_at = 0
+            AND res.permission_code IS NOT NULL
+            AND TRIM(res.permission_code) != ''
+        ORDER BY res.app_id, res.permission_code, res.id
+    </select>
+
+</mapper>
