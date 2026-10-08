@@ -37,4 +37,5 @@ mybatis-plus:
 # Auth 与 System 由运行环境注入相同的服务凭证；缺失时拒绝启动。
 nexusauth:
   internal:
-    system-token: ${NEXUSAUTH_SYSTEM_INTERNAL_TOKEN:NIUREN-NEXUSAUTH-20261006}
+    # 值需43～128 个字符
+    system-token: ${NEXUSAUTH_SYSTEM_INTERNAL_TOKEN:NIUREN-NEXUSAUTH-20261006-IUREN-NEXUSAUTH-20261006}

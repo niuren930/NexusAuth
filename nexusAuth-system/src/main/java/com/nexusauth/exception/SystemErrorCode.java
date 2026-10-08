@@ -11,6 +11,16 @@ package com.nexusauth.exception;
 public enum SystemErrorCode implements ErrorCode {
 
     /**
+     * 内部调用缺少合法的当前操作人。
+     */
+    OPERATOR_CONTEXT_INVALID(3000001, "当前操作人上下文无效"),
+
+    /**
+     * 当前用户接口的参数用户与受信任操作人不一致。
+     */
+    CURRENT_USER_MISMATCH(3000002, "只能查询当前用户的租户关系"),
+
+    /**
      * 查询缺少或携带非法用户、租户上下文。
      */
     PERMISSION_CONTEXT_INVALID(3002000, "权限查询上下文无效"),

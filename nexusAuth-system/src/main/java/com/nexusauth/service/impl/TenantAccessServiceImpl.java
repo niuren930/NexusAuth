@@ -8,6 +8,8 @@ import com.nexusauth.domain.entity.Tenant;
 import com.nexusauth.domain.entity.TenantMember;
 import com.nexusauth.domain.enums.TenantMemberStatus;
 import com.nexusauth.domain.enums.TenantStatus;
+import com.nexusauth.exception.BusinessException;
+import com.nexusauth.exception.SystemErrorCode;
 import com.nexusauth.mapper.TenantMapper;
 import com.nexusauth.mapper.TenantMemberMapper;
 import com.nexusauth.service.TenantAccessService;
@@ -39,6 +41,8 @@ public class TenantAccessServiceImpl implements TenantAccessService {
     @Override
     public List<UserTenantInfo> getUserTenants(Long userId) {
 
+        requireCurrentUser(userId);
+
         // 跨租户查询到该用户可访问的所有租户
         List<TenantMember> tenantMemberList = tenantMemberMapper.selectByUserIdCrossTenant(userId);
 
@@ -68,6 +72,21 @@ public class TenantAccessServiceImpl implements TenantAccessService {
                 })
                 .filter(Objects::nonNull)
                 .toList();
+    }
+
+    /**
+     * 跨租户查询仅供“我的租户”与“我是否能进入该租户”。
+     *
+     * @param requestedUserId
+     */
+    private void requireCurrentUser(Long requestedUserId) {
+        Long operatorId = OperatorContextHolder.getUserId();
+        if (operatorId == null || operatorId <= 0) {
+            throw new BusinessException(SystemErrorCode.OPERATOR_CONTEXT_INVALID);
+        }
+        if (requestedUserId == null || !operatorId.equals(requestedUserId)) {
+            throw new BusinessException(SystemErrorCode.CURRENT_USER_MISMATCH);
+        }
     }
 
     private UserTenantInfo toUserTenantInfo(TenantMember member, Tenant tenant) {

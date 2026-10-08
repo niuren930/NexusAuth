@@ -4,6 +4,8 @@ import cn.dev33.satoken.exception.NotLoginException;
 import com.nexusauth.core.Result;
 import com.nexusauth.exception.AuthErrorCode;
 import com.nexusauth.exception.BusinessException;
+import com.nexusauth.exception.PermissionAccessDeniedException;
+import com.nexusauth.exception.PermissionServiceUnavailableException;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -53,7 +55,7 @@ public class GlobalExceptionHandler {
 
     /**
      * Feign 未处理异常。
-     *
+     * <p>
      * 正常情况下业务层应该尽量转换，
      * 这里作为最后兜底。
      */
@@ -61,10 +63,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Result<Void>> handleFeignException(
             FeignException exception) {
 
-        log.error(
-                "远程服务调用异常",
-                exception
-        );
+        log.error("远程服务调用异常，HTTP 状态={}", exception.status());
 
         return ResponseEntity
                 .status(HttpStatus.BAD_GATEWAY)
@@ -120,5 +119,25 @@ public class GlobalExceptionHandler {
                                 message
                         )
                 );
+    }
+
+    /**
+     * 权限查询上游失败；服务身份错误不能被转换为用户未登录。
+     */
+    @ExceptionHandler(PermissionServiceUnavailableException.class)
+    public ResponseEntity<Result<Void>> handlePermissionServiceUnavailable(
+            PermissionServiceUnavailableException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                .body(Result.fail(exception.getCode(), exception.getMessage()));
+    }
+
+    /**
+     * 当前权限查询中的成员或租户不可访问。
+     */
+    @ExceptionHandler(PermissionAccessDeniedException.class)
+    public ResponseEntity<Result<Void>> handlePermissionAccessDenied(
+            PermissionAccessDeniedException exception) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Result.fail(exception.getCode(), exception.getMessage()));
     }
 }

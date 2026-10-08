@@ -2,16 +2,21 @@ package com.nexusauth.exception;
 
 /**
  * 认证模块错误码
- *
+ * <p>
  * 错误码规律：
- *      2       = auth 模块
- *      001     = 登录认证场景
- *      001、002、003     = 具体错误
+ * 2       = auth 模块
+ * 001     = 登录认证场景
+ * 001、002、003     = 具体错误
  *
  * @author niuren
  * @date 2026-10-04 09:05
  */
 public enum AuthErrorCode implements ErrorCode {
+
+    /**
+     * System 权限查询调用失败或返回违反契约的数据。
+     */
+    PERMISSION_SERVICE_UNAVAILABLE(2002501, "权限服务暂时不可用"),
 
     /**
      * 当前 Token 尚未选择租户。
